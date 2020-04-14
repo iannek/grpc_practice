@@ -1,0 +1,187 @@
+##################################################################################################
+# Frontend service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  type: NodePort
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: v1
+    spec:
+      containers:
+      - name: frontend
+        image: grpc_frontend
+        tty: true
+        command: ["/bin/sh","-c"]
+        args: [npm install && npm start]
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+          - name: src-frontend
+            mountPath: /usr/src/app/react-sample/src
+      volumes:
+        - name: src-frontend
+          configMap:
+            name: frontend
+---
+
+##################################################################################################
+# Backend service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: v1
+    spec:
+      containers:
+      - name: backend
+        image: grpc_backend
+        tty: true
+        volumeMounts:
+          - name: config-backend
+            mountPath: /app
+        command: ["/bin/sh","-c"]
+        args: [python3 app.py]
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 50051
+      - name: backend-db
+        image: mysql
+        tty: true
+        imagePullPolicy: Never
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: test_database
+        - name: MYSQL_USER
+          value: docker
+        - name: MYSQL_PASSWORD
+          value: docker
+        - name: TZ
+          value: 'Asia/Tokyo'
+        volumeMounts:
+          - name: config-backend-db
+            mountPath: /etc/mysql/conf.d
+          - name: data-backend
+            mountPath: /etc/mysql/csv/
+        ports:
+        - containerPort: 3306
+      volumes:
+        - name: config-backend
+          configMap:
+            name: backend
+        - name: config-backend-db
+          configMap:
+            name: mysql-conf
+        - name: data-backend
+          configMap:
+            name: csv-db
+---
+
+##################################################################################################
+# Proxy service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+spec:
+  type: NodePort
+  selector:
+    app: proxy
+  ports:
+    - protocol: TCP
+      port: 10000
+      targetPort: 10000
+      nodePort: 30001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  labels:
+    app: proxy
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: proxy
+        version: v1
+    spec:
+      containers:
+      - name: proxy
+        image: grpc_proxy
+        tty: true
+        volumeMounts:
+          - name: config-proxy
+            mountPath: /etc/envoy/
+#        command: ["/bin/sh","-c"]
+#        args: [/usr/local/bin/envoy -c /etc/envoy/envoy.yaml]
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 10000
+      volumes:
+        - name: config-proxy
+          configMap:
+            name: config-proxy
+---

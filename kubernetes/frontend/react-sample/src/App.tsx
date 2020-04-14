@@ -28,8 +28,8 @@ class App extends React.Component<{}, State> {
 
   private onClick = () => {
     const request = new TemparatureRequest();
-//    const metadata = {'authorization': 'Basic YWRtaW46YWRtaW4='};
-    const client = new GreeterClient("http://localhost:10000", {}, {});
+
+    const client = new GreeterClient("http://localhost:30001", {}, {});
     client.sayHello(request, {}, (err, response) => {
       if (err || response === null) {
         console.log('Got error, code = ' + err.code +
