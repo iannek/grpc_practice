@@ -36,6 +36,27 @@ static_resources:
               config:
                 path: /dev/stdout
           http_filters:
+          - name: envoy.filters.http.jwt_authn
+            config:
+              providers:
+                jwt_provider:
+                  #forward_payload_header: base64url_encoded(jwt_payload_in_JSON)
+                  issuer: http://localhost:8080/auth/realms/test
+                  #audiences:
+                  #- test
+                  remote_jwks:
+                    http_uri:
+                      uri: http://keycloak:8080/auth/realms/test/protocol/openid-connect/certs
+                      cluster: jwks_cluster
+                      timeout: 60s
+                    cache_duration:
+                      seconds: 300
+              rules:
+                - match:
+                    prefix: /
+                  requires:
+                    provider_and_audiences:
+                      provider_name: jwt_provider
           - name: envoy.grpc_web
           - name: envoy.cors
           - name: envoy.router
@@ -48,4 +69,14 @@ static_resources:
     upstream_connection_options:
       tcp_keepalive:
         keepalive_time: 300
-    hosts: [{ socket_address: { address: apigw, port_value: 8000 }}]
+    hosts: [{ socket_address: { address: backend, port_value: 50051 }}]
+  - name: jwks_cluster
+    connect_timeout: 0.25s
+    type: STRICT_DNS
+    load_assignment:
+      cluster_name: jwks_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address: { address: keycloak, port_value: 8080 }

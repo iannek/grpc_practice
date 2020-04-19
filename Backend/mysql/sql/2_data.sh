@@ -1,0 +1,2 @@
+mysql -u root -proot --local-infile test_database -e "load data local infile '/etc/mysql/csv/tokyo.csv' into table highest_temperature fields terminated by ',' optionally enclosed by '' lines terminated by '\r' ignore 1 lines ;"
+mysql -u root -proot --local-infile test_database -e "load data local infile '/etc/mysql/csv/osaka.csv' into table highest_temperature fields terminated by ',' optionally enclosed by '' lines terminated by '\r' ignore 1 lines ;"

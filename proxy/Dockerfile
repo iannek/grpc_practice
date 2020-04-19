@@ -1,2 +1,2 @@
-FROM envoyproxy/envoy-dev:b7b1dba1907081565daa2d0dd4e52cc824d77a30
+FROM envoyproxy/envoy-dev:108a176d1cf9af9927f1b564da138629a8377cfe
 COPY ./envoy.yaml /etc/envoy/envoy.yaml

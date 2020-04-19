@@ -8,15 +8,9 @@ import sample_pb2_grpc
 
 
 def run():
-    with grpc.insecure_channel('localhost:80') as channel:
+    with grpc.insecure_channel('localhost:10000') as channel:
         stub = sample_pb2_grpc.GreeterStub(channel)
         response = stub.SayHello(sample_pb2.TemparatureRequest())
-#        response = stub.SayHello.with_call(
-#            sample_pb2.TemparatureRequest(),
-#            metadata=(
-#                ('authorization', 'Basic YWRtaW46YWRtaW4='),
-#            ))
-
     for a in response.temparatures:
         print(a)
 
