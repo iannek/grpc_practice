@@ -1,0 +1,53 @@
+version: '3'
+services:
+  ##Backend
+  backend:
+    build: 
+      context: ./Backend/
+    tty: true
+    depends_on:
+      - mysql
+    volumes:
+      - ./Backend/src:/app
+    ports:
+      - 8000:50051
+    command: sh -c "python3 app.py"
+    links:
+      - mysql
+  mysql:
+    image: mysql
+    container_name: mysql_host
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_database
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+    - ./Backend/mysql/data:/var/lib/mysql
+    - ./Backend/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    - ./Backend/mysql/sql:/docker-entrypoint-initdb.d
+    - ./Backend/mysql/csv:/etc/mysql/csv
+    ports:
+    - 3306:3306
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+     - ./frontend/react-sample/src:/usr/src/app/react-sample/src
+    command: sh -c "npm install && npm start"
+    ports:
+     - "3000:3000"
+    tty: true
+  proxy:
+    build: ./proxy
+    command: "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"
+    volumes:
+      - ./proxy/envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "10000:10000"
+networks:
+  default:
+    driver: bridge
