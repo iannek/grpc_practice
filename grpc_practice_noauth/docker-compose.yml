@@ -31,12 +31,13 @@ services:
     - ./Backend/mysql/csv:/etc/mysql/csv
     ports:
     - 3306:3306
-  frontend:
+  frontend_notype:
     build:
-      context: ./frontend
+      context: ./frontend_notype
       dockerfile: Dockerfile
     volumes:
-     - ./frontend/react-sample/src:/usr/src/app/react-sample/src
+     - ./frontend_notype/react-sample/src:/usr/src/app/react-sample/src
+     - ./frontend_notype/react-sample/public/keycloak.json:/usr/src/app/react-sample/public/keycloak.json
     command: sh -c "npm install && npm start"
     ports:
      - "3000:3000"
@@ -48,6 +49,34 @@ services:
       - ./proxy/envoy.yaml:/etc/envoy/envoy.yaml
     ports:
       - "10000:10000"
+<<<<<<< HEAD:grpc_practice_noauth/docker-compose.yml
+=======
+  postgres:
+    image: postgres
+    volumes:
+      - ./keycloak/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+  keycloak:
+      image: quay.io/keycloak/keycloak:latest
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_SCHEMA: public
+        DB_PASSWORD: password
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: Pa55w0rd
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "ssl=true"
+      ports:
+        - 8080:8080
+      depends_on:
+        - postgres
+>>>>>>> 24dda43cf74a2405b8720baecee93ab8a05e267e:docker-compose.yml
 networks:
   default:
     driver: bridge

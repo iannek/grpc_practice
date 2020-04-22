@@ -8,8 +8,11 @@
  */
 // GENERATED CODE -- DO NOT EDIT!
 /* eslint-disable */
+<<<<<<< HEAD:grpc_practice_auth/proto/sample_pb.js
 
 
+=======
+>>>>>>> 24dda43cf74a2405b8720baecee93ab8a05e267e:frontend/react-sample/src/sample_pb.js
 var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();

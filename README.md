@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 構成
 ## grpc_practice_noauth
 react(grpcweb) →  envoy → backend
@@ -13,6 +14,11 @@ react(grpcweb) →  envoy → backend
 3. sendボタンを押すと、ブラウザのコンソールにbackendから取得したcsvが表示される
 
 # 事前のkeycloak設定
+=======
+# grpc_practice
+
+## 事前のkeycloak設定
+>>>>>>> 24dda43cf74a2405b8720baecee93ab8a05e267e
 1. realm作成
   - Name…test
 
