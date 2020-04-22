@@ -2,7 +2,7 @@
 ## grpc_practice_noauth
 react(grpcweb) →  envoy → backend
 
-## grpc_practice_withauth
+## grpc_practice_auth
 上記に加えkeycloakで認証かけたもの(事前のkeycloak設定が必要)
 
 # 利用
