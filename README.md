@@ -20,4 +20,4 @@ react(grpcweb) →  envoy → backend
   - Client ID…test
   - Root URL…http://localhost:3000/
 
-3. 作成したrealmでユーザを作成する(名前は何でもいい)
+3. 作成したrealmでユーザを作成(名前は何でもいい)。パスワードも設定する。
