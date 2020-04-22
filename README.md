@@ -18,6 +18,6 @@ react(grpcweb) →  envoy → backend
 
 2. 作成したrealmでclinetsを作成する
   - Client ID…test
-  - Client ID…http://localhost:3000/
+  - Root URL…http://localhost:3000/
 
 3. 作成したrealmでユーザを作成する(名前は何でもいい)
